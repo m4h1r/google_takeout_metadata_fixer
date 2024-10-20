@@ -1,46 +1,46 @@
 #!/bin/bash
 
-# Überprüfen, ob exiftool installiert ist
+# exiftool'un kurulu olup olmadığını kontrol edin
 if ! command -v exiftool &> /dev/null
 then
-    echo "exiftool ist nicht installiert. Bitte installieren Sie es mit 'brew install exiftool'."
+    echo "exiftool yüklü değil. Lütfen 'brew install exiftool' ile kurun."
     exit 1
 fi
 
-# Funktion zur Konvertierung des Datums
+# Tarih dönüştürme işlevi
 convert_date() {
     local input_date="$1"
-    # Entfernen von "UTC" und umwandeln in das richtige Format
-    echo "$input_date" | sed 's/ UTC$//' | sed 's/\([0-9]\{2\}\)\.\([0-9]\{2\}\)\.\([0-9]\{4\}\), \([0-9]\{2\}\):\([0-9]\{2\}\):\([0-9]\{2\}\)/\3:\2:\1 \4:\5:\6/'
+    # "UTC" kaldırma, UK/US Eylül ayı adını düzeltme ve doğru formata dönüştürme.
+    echo "$input_date" | sed 's/ UTC$//' | sed 's/Sept/Sep/' | sed 's/\([0-9]\{2\}\)\.\([0-9]\{2\}\)\.\([0-9]\{4\}\), \([0-9]\{2\}\):\([0-9]\{2\}\):\([0-9]\{2\}\)/\3:\2:\1 \4:\5:\6/'
 }
 
-# Funktion zur Verarbeitung einer einzelnen JSON-Datei
+# Tekil JSON dosyasını işleme
 process_json_file() {
     local json_file="$1"
     local dir=$(dirname "$json_file")
     local base=$(basename "$json_file" .json)
     local image_file="$dir/$base"
     
-    # Überprüfen, ob die Bilddatei existiert
+    # Görüntü dosyasının mevcut olup olmadığını kontrol
     if [ ! -f "$image_file" ]; then
-        echo "Warnung: Keine entsprechende Bilddatei für $json_file gefunden."
+        echo "Uyarı: $json_file için karşılık gelen görüntü dosyası bulunamadı."
         return
     fi
     
-    echo "Verarbeite $image_file..."
+    echo "İşleniyor $image_file..."
     
-    # Daten aus der JSON-Datei extrahieren
-    creation_time=$(jq -r '.photoTakenTime.formatted' "$json_file")
+    # JSON dosyasından veri çıkarma
+    creation_time=$(jq -r '.creationTime.formatted' "$json_file" )
     photo_taken_time=$(jq -r '.photoTakenTime.formatted' "$json_file")
     latitude=$(jq -r '.geoData.latitude' "$json_file")
     longitude=$(jq -r '.geoData.longitude' "$json_file")
     altitude=$(jq -r '.geoData.altitude' "$json_file")
     
-    # Datum-Strings in das korrekte Format umwandeln
+    # Tarih dizelerini doğru formata dönüştürme
     creation_time=$(convert_date "$creation_time")
     photo_taken_time=$(convert_date "$photo_taken_time")
     
-    # EXIF-Daten aktualisieren
+    # EXIF verilerini güncelleme
     exiftool -overwrite_original \
              -CreateDate="$creation_time" \
              -DateTimeOriginal="$photo_taken_time" \
@@ -51,30 +51,30 @@ process_json_file() {
              -GPSAltitude="$altitude" \
              "$image_file"
     
-    # Datei-Zeitstempel aktualisieren
-    touch -t $(date -j -f "%Y:%m:%d %H:%M:%S" "$creation_time" "+%Y%m%d%H%M.%S") "$image_file"
+    # Dosya zaman damgasını güncelleme (Sizin JSON dosyanızda tarih formatı farklı ise ilk formatı uygun şekilde güncelleyin.)
+    touch -t $(date -j -f "%e %b %Y, %H:%M:%S" "$creation_time" "+%Y%m%d%H%M.%S") "$image_file"
     
-    echo "EXIF-Daten und Datei-Zeitstempel für $image_file aktualisiert."
+    echo "$image_file için EXIF ​​verileri ve dosya zaman damgaları güncellendi."
 }
 
-# Funktion zum rekursiven Durchsuchen von Verzeichnissen
+# Dizinleri yinelemeli olarak arama
 process_directory() {
     local dir="$1"
     
-    # Alle JSON-Dateien im aktuellen Verzeichnis verarbeiten
+    # Geçerli dizindeki tüm JSON dosyalarını işleme
     for json_file in "$dir"/*.json; do
-        [ -e "$json_file" ] || continue  # Überprüfen, ob JSON-Dateien existieren
+        [ -e "$json_file" ] || continue  # JSON dosyalarının mevcut olup olmadığını kontrol
         process_json_file "$json_file"
     done
     
-    # Rekursiv durch Unterverzeichnisse gehen
+    # Alt dizinlerde yinelemeli olarak gezinme
     for subdir in "$dir"/*/ ; do
-        [ -d "$subdir" ] || continue  # Überprüfen, ob es sich um ein Verzeichnis handelt
+        [ -d "$subdir" ] || continue  # Alt dizin olup olmadığını kontrol
         process_directory "$subdir"
     done
 }
 
-# Starten der Verarbeitung vom aktuellen Verzeichnis aus
+# Geçerli dizinden işleme başla
 process_directory "."
 
-echo "Alle Dateien in allen Unterordnern verarbeitet."
+echo "Tüm alt klasörlerdeki tüm dosyalar işlendi."
