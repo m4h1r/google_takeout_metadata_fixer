@@ -32,9 +32,9 @@ The script will automatically process all photos and their corresponding JSON fi
 Always make a backup of your photos before running any script that modifies metadata.
 Her hangi bir kod çalıştırmadan önce muhakkak tüm verilerinizin bir yedeğini alarak hareket edin.
 
-##Kredi ve Teşekkür
+## Kredi ve Teşekkür
 Bu kod @ziegenhagel kullanıcısı tarafından oluşturulmuştu. Ben onu alıp, kendim için gerekli güncellemeleri yaparak Türkçe yorumlar ekledim. Kendisine teşekkür ederim.
-##Credits und Danksagungen
+## Credits und Danksagungen
 Dieser Code wurde vom Benutzer @ziegenhagel erstellt. Ich nahm es und nahm selbst die notwendigen Aktualisierungen vor und fügte türkische Kommentare hinzu. Ich danke ihm.
 
 ## Troubleshooting
