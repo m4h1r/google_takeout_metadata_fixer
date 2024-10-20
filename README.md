@@ -1,7 +1,7 @@
-# Google Photos Metadata Fixer
+# Google Photos Metadata Düzeltici
 
-## Description
-When exporting photos via Google Takeout, Google doesn't apply all metadata to the image files. This script addresses this issue by iterating through folders, looking for `.json` metadata files and their corresponding photos. It then extracts the correct "photo taken" date from the JSON and writes it to the photo's EXIF data, ensuring your photos have accurate timestamps.
+## Açıklama
+Google Takeout üzerinden resimlerinizi dışa aktardığınızda, Google tüm metaverilerinizi resim dosyanıza uygulamıyor. Bu kod betiği tüm klasör ve alt klasörlerde bulunan `.json` meta verilerini ve eşgelen resimleri arıyor. Daha sonra JSON dosyasından aldığı doğru çekim, oluşturma tarihleri ve konumları ile EXIF verilerini güncelliyor.
 
 ## Features
 - Recursively processes all subdirectories
@@ -28,8 +28,14 @@ Ensure these are installed on your system before running the script.
 
 The script will automatically process all photos and their corresponding JSON files in the current directory and all subdirectories.
 
-## Note
+## Not
 Always make a backup of your photos before running any script that modifies metadata.
+Her hangi bir kod çalıştırmadan önce muhakkak tüm verilerinizin bir yedeğini alarak hareket edin.
+
+##Kredi ve Teşekkür
+Bu kod @ziegenhagel kullanıcısı tarafından oluşturulmuştu. Ben onu alıp, kendim için gerekli güncellemeleri yaparak Türkçe yorumlar ekledim. Kendisine teşekkür ederim.
+##Credits und Danksagungen
+Dieser Code wurde vom Benutzer @ziegenhagel erstellt. Ich nahm es und nahm selbst die notwendigen Aktualisierungen vor und fügte türkische Kommentare hinzu. Ich danke ihm.
 
 ## Troubleshooting
 If you encounter any issues, ensure that:
